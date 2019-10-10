@@ -12,10 +12,12 @@ export class MapComponent implements OnInit {
 
   points: Point[] = [];
   aristas: Arista[] = [];
+  result: Arista[] = [];
   pointA: Point = null;
   pointB: Point = null;
   point: Point;
   color = '#226bfc';
+  colorRes = '#ffd600';
   origin: Point;
   destin: Point;
   inPointSelectOrigin = false;
@@ -62,7 +64,6 @@ export class MapComponent implements OnInit {
   save(val, heuristic) {
     this.point.label = val;
     this.point.heuristic = heuristic;
-    console.log(this.point);
     this.points.push({
       x: this.point.x,
       y: this.point.y,
@@ -87,7 +88,7 @@ export class MapComponent implements OnInit {
 
   calcHeuristic() {
     this.points.forEach(p => {
-      p.heuristic = this.distanceAB(p, this.destin);
+      p.heuristic = this.distanceAB(p, this.origin);
     });
     console.log(this.aristas, this.points);
   }
@@ -102,6 +103,12 @@ export class MapComponent implements OnInit {
     return Math.round(Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2)));
   }
   deletePoint(i) {
+    const poin = this.points[i];
+    this.aristas.forEach((f, index) => {
+      if ( f.pointB.label === poin.label  || f.pointA.label === poin.label) {
+        this.aristas.splice(index, i);
+      }
+    });
     this.points.splice(i, 1);
   }
   cancelNode() {
@@ -116,7 +123,27 @@ export class MapComponent implements OnInit {
       destin: this.destin
     };
     this.astar.aSearch(data).subscribe(res => {
-      console.log(res);
+      this.result = this.makeResult(res);
+      console.log(this.result);
     });
+  }
+  makeResult(res: any): any {
+    const listr = [];
+    res.forEach((r: any) => {
+      if (r.length > 1) {
+        listr.push(
+          this.aristas.find((s: any) => {
+          return s.pointA.label === r[0] && s.pointB.label === r[1] || s.pointA.label === r[1] && s.pointB.label === r[0];
+        }));
+      }
+    });
+    return listr;
+  }
+  reset() {
+    this.points = [];
+    this.aristas = [];
+    this.result = [];
+    this.origin = null;
+    this.destin = null;
   }
 }

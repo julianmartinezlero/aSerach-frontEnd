@@ -17,7 +17,12 @@
         </div>
       </div>
       <div class="card-action">
-        <button class="waves-effect waves-light btn cyan darken-3 " type="button"  (click)="startAlgoritm()">Inciar</button>
+        <div class="row">
+          <button style="margin-bottom: 10px" class="col s12 waves-effect waves-light btn red darken-3 " type="button"  (click)="reset()">Limpiar</button>
+          <button style="margin-bottom: 10px" class="col s12 waves-effect waves-light btn red darken-3 " type="button"  (click)="result = []">Reiniciar</button>
+          <button class="col s12 waves-effect waves-light btn cyan darken-3 " type="button"  (click)="startAlgoritm()">Inciar</button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -45,6 +50,7 @@
          [y1]="l.pointA.y"
          [x2]="l.pointB.x"
          [y2]="l.pointB.y" [stroke]="color" [strokeWidth]="5" [label]="l.value"></g>
+
       <g line *ngIf="pointA"
          [x1]="pointA.x"
          [y1]="pointA.y"
@@ -59,6 +65,11 @@
          [filter]="'url(#shadow)'"
          (deleted)="deletePoint(i)"
          (click)="pointSelect(p)"></g>
+      <g line *ngFor="let l of result"
+         [x1]="l.pointA.x"
+         [y1]="l.pointA.y"
+         [x2]="l.pointB.x"
+         [y2]="l.pointB.y" [stroke]="colorRes" [strokeWidth]="5" [label]="l.value"></g>
     </svg>
   </div>
 
