@@ -1,0 +1,87 @@
+
+<div class="main-content" (window:keyup.esc)="escape($event)">
+  <button *ngIf="inPointSelectDestin||inPointSelectOrigin||pointA" (click)="escape($event)" class="btn-floating red btn-large float"><i class="white-text material-icons">close</i></button>
+  <div class="nav-menu-left">
+    <div class="algoritmo card">
+      <div class="card-content">
+        <div class="row">
+          <button (click)="selectOrigin()" [disabled]="points.length < 2" type="button" class="waves-effect waves-light btn green darken-3 white-text col s6">Origen</button>
+          <p class="col s4" *ngIf="origin">{{origin.label}}</p>
+        </div>
+        <div class="row">
+          <button (click)="selectDestin()" [disabled]="points.length < 2" type="button" class="waves-effect waves-light btn red darken-3 white-text col s6">Destino</button>
+          <p class="col s4" *ngIf="destin">{{destin.label}}</p>
+        </div>
+        <div class="row">
+          <button  [disabled]="!origin || !destin" (click)="calcHeuristic()" type="button" class="waves-effect waves-light col s12 btn blue darken-3 white-text col s8">Heuristica</button>
+        </div>
+      </div>
+      <div class="card-action">
+        <button class="waves-effect waves-light btn cyan darken-3 " type="button"  (click)="startAlgoritm()">Inciar</button>
+      </div>
+    </div>
+  </div>
+  <div class="nav-menu-right">
+    <svg id="maps" width="1825px" height="100%"  (mousemove)="movePointB($event)">
+      <defs>
+        <filter id="shadow" filterUnits="userSpaceOnUse">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2"></feGaussianBlur>
+          <feOffset dx="1" dy="4" result="offsetblur"></feOffset>
+          <feFlood flood-color="#000000"></feFlood>
+          <feComposite in2="offsetblur" operator="in"></feComposite>
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.7"></feFuncA>
+          </feComponentTransfer>
+          <feMerge>
+            <feMergeNode></feMergeNode>
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+          </feMerge>
+        </filter>
+      </defs>
+      <image xlink:href="/assets/maps.png" height="100%" width="100%" (click)="markPoint($event)" />
+
+      <g line *ngFor="let l of aristas"
+         [x1]="l.pointA.x"
+         [y1]="l.pointA.y"
+         [x2]="l.pointB.x"
+         [y2]="l.pointB.y" [stroke]="color" [strokeWidth]="5" [label]="l.value"></g>
+      <g line *ngIf="pointA"
+         [x1]="pointA.x"
+         [y1]="pointA.y"
+         [x2]="pointB.x"
+         [y2]="pointB.y" [stroke]="color" [strokeWidth]="5"></g>
+      <g circle *ngFor="let p of points; let i = index"
+         [cx]="p.x"
+         [cy]="p.y"
+         [r]="20"
+         [label]="p.label"
+         [fill]="'red'"
+         [filter]="'url(#shadow)'"
+         (deleted)="deletePoint(i)"
+         (click)="pointSelect(p)"></g>
+    </svg>
+  </div>
+
+
+  <div class="dialog card" *ngIf="point" [ngStyle]="{top: point.y + 'px', left: point.x + 'px'}">
+    <h4 class="card-title">Nombre Nodo</h4>
+    <form autocomplete="off" (ngSubmit)="save(nodeName.value, heuristic.value)">
+      <div class="card-content">
+        <div class="row">
+          <div class="input-field col s12">
+            <label for="nameNode">Nombre Nodo</label>
+            <input type="text" [maxLength]="5" id="nameNode" #nodeName>
+          </div>
+          <div class="input-field col s12">
+            <label for="heuristic">Heuristica</label>
+            <input type="text" [maxLength]="5" id="heuristic" #heuristic>
+          </div>
+        </div>
+      </div>
+      <div class="card-action">
+        <button (click)="cancelNode()" class="btn btn-block red darken-3 white-text" type="button">Cancelar</button>
+        <button class="btn btn-block indigo darken-3 white-text" type="submit">Aceptar</button>
+      </div>
+    </form>
+  </div>
+</div>
